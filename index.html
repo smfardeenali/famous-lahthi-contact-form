@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Famous Lahthi – Contact Us</title>
+  
+  <!-- Google Fonts Import for a traditional yet modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Embedded CSS for Traditional Theme -->
+  <style>
+    /* Basic Reset & Body Styling */
+    body {
+      margin: 0;
+  
+      padding: 0;
+      font-family: 'Inter', sans-serif; /* Modern, readable font for body text */
+      background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); /* Subtle gradient background */
+      color: #333;
+      line-height: 1.6;
+      display: flex; /* Use flexbox to center content */
+      justify-content: center; /* Center horizontally */
+      align-items: flex-start; /* Align to top, allowing content to flow naturally */
+      min-height: 100vh; /* Minimum height of the viewport */
+      padding: 20px; /* Padding around the entire container */
+      box-sizing: border-box; /* Include padding in element's total width and height */
+    }
+
+    /* Main Form Container Styling */
+    .form-container {
+      background-color: #ffffff;
+      border-radius: 15px; /* Rounded corners for a softer look */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+      padding: 40px;
+      max-width: 700px; /* Max width for readability on larger screens */
+      width: 100%; /* Full width on smaller screens */
+      box-sizing: border-box;
+      margin-top: 20px; /* Space from the top */
+      margin-bottom: 20px; /* Space from the bottom */
+    }
+
+    /* Header Styling */
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0e6d2; /* Subtle golden border */
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif; /* Elegant font for headings */
+      font-size: 2.8em;
+      color: #8B4513; /* Saddle Brown - a rich, traditional color */
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      font-size: 1.1em;
+      color: #666;
+      font-style: italic;
+    }
+
+    /* Section Heading Styling */
+    .form-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2em;
+      color: #8B4513;
+      text-align: center;
+      margin-bottom: 30px;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .form-section h2::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background-color: #DAA520; /* Goldenrod - a golden accent */
+      border-radius: 5px;
+    }
+
+    /* Form Group Styling */
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+      font-size: 1em;
+    }
+
+    /* Input, Select, Textarea Styling */
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group select,
+    .form-group textarea {
+      width: calc(100% - 20px); /* Adjust for padding */
+      padding: 12px 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px; /* Slightly more rounded inputs */
+      font-size: 1em;
+      color: #333;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      box-sizing: border-box; /* Ensure padding doesn't increase total width */
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #DAA520; /* Goldenrod border on focus */
+      box-shadow: 0 0 8px rgba(218, 165, 32, 0.2); /* Subtle glow on focus */
+      outline: none; /* Remove default outline */
+    }
+
+    .form-group textarea {
+      resize: vertical; /* Allow vertical resizing */
+      min-height: 100px; /* Minimum height for textarea */
+    }
+
+    /* Small hint text below inputs */
+    .form-hint {
+      font-size: 0.85em;
+      color: #777;
+      margin-top: 5px;
+      display: block;
+    }
+
+    /* Radio Button Group Styling */
+    .radio-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .radio-group input[type="radio"] {
+      margin-right: 10px;
+      transform: scale(1.2); /* Slightly larger radio buttons */
+    }
+
+    .radio-group label {
+      margin-bottom: 0; /* Remove bottom margin for labels in radio group */
+      font-weight: 400; /* Lighter font weight for radio labels */
+      color: #444;
+    }
+
+    /* Submit Button Styling */
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 15px 20px;
+      background-color: #DAA520; /* Goldenrod background */
+      color: #ffffff;
+      border: none;
+      border-radius: 10px; /* Rounded button */
+      font-size: 1.2em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      box-shadow: 0 5px 15px rgba(218, 165, 32, 0.3); /* Soft shadow */
+    }
+
+    .submit-btn:hover {
+      background-color: #b8860b; /* Darker goldenrod on hover */
+      transform: translateY(-2px); /* Slight lift effect */
+      box-shadow: 0 8px 20px rgba(218, 165, 32, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0); /* Press down effect */
+      box-shadow: 0 3px 10px rgba(218, 165, 32, 0.2);
+    }
+
+    /* Footer Styling */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      color: #666;
+      font-size: 0.95em;
+    }
+
+    footer p {
+      margin-bottom: 8px;
+    }
+
+    footer strong {
+      color: #444;
+    }
+
+    footer a {
+      color: #8B4513; /* Saddle Brown for links */
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: #DAA520; /* Goldenrod on link hover */
+      text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .form-container {
+        padding: 30px 20px; /* Reduce padding on smaller screens */
+        margin: 10px; /* Reduce margin */
+      }
+
+      header h1 {
+        font-size: 2.2em; /* Adjust font size for smaller screens */
+      }
+
+      .form-section h2 {
+        font-size: 1.8em;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        padding: 10px; /* Smaller padding for inputs */
+      }
+
+      .submit-btn {
+        font-size: 1.1em; /* Smaller font for button */
+        padding: 12px 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        padding: 20px 15px; /* Even less padding on very small screens */
+      }
+
+      header h1 {
+        font-size: 1.8em;
+      }
+
+      header p {
+        font-size: 0.9em;
+      }
+
+      .form-section h2 {
+        font-size: 1.5em;
+      }
+
+      .form-group label {
+        font-size: 0.9em;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        font-size: 0.9em;
+      }
+
+      footer {
+        font-size: 0.85em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Main container for the form and footer -->
+  <div class="form-container">
+    <!-- Header section with shop name and tagline -->
+    <header>
+      <h1>🌟 Famous Lahthi 🌟</h1>
+      <p>Where Tradition Meets Art, and Every Bangle Tells a Story</p>
+    </header>
+
+    <!-- Contact Form Section -->
+    <section class="form-section">
+      <h2>Contact Us</h2>
+      <form id="contactForm">
+        <!-- Full Name Input Field -->
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter your full name" required autocomplete="name" minlength="2" />
+        </div>
+
+        <!-- Email Address Input Field -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="example@gmail.com" required autocomplete="email" />
+        </div>
+
+        <!-- Mobile Number Input Field -->
+        <div class="form-group">
+          <label for="phone">Mobile Number</label>
+          <!-- type="tel" for mobile-friendly keyboard, pattern for 10 digits -->
+          <input type="tel" id="phone" name="phone" placeholder="e.g., 9876543210" required pattern="[6-9][0-9]{9}" title="Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9." maxlength="10" />
+          <small class="form-hint">This will be used for WhatsApp/Call updates regarding your order.</small>
+        </div>
+
+        <!-- Customer Address Textarea -->
+        <div class="form-group">
+          <label for="address">Customer Address</label>
+          <textarea id="address" name="address" rows="4" placeholder="Enter your full address including street, city, state, and pincode..." required></textarea>
+          <small class="form-hint">Please provide your complete address for delivery purposes.</small>
+        </div>
+
+        <!-- Subject Dropdown Field -->
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <select id="subject" name="subject" required>
+            <option value="">-- Select a Subject --</option>
+            <option value="Bangle Order">Bangle Order</option>
+            <option value="Custom Design">Custom Design</option>
+            <option value="Bridal Collection">Bridal Collection</option>
+            <option value="Delivery Query">Delivery Query</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <!-- Design Screenshot Upload Field -->
+        <div class="form-group">
+          <label for="designImage">Upload Design Screenshot (Optional)</label>
+          <!-- accept attribute restricts file types in selection dialog -->
+          <input type="file" id="designImage" name="designImage" accept="image/jpeg, image/jpg, image/png" />
+          <small class="form-hint">Accepted formats: JPEG, PNG. Maximum file size: 15MB (actual validation will be done via JavaScript/server).</small>
+        </div>
+
+        <!-- Bangle Size Input Field -->
+        <div class="form-group">
+          <label for="bangleSize">Bangle Size</label>
+          <input type="text" id="bangleSize" name="bangleSize" placeholder="e.g., 2.4, 2.6, 2.8, or custom measurements" />
+          <small class="form-hint">Please specify standard size (e.g., 2.4) or exact measurements for custom designs.</small>
+        </div>
+
+        <!-- Preferred Color Dropdown Field -->
+        <div class="form-group">
+          <label for="bangleColor">Preferred Color</label>
+          <select id="bangleColor" name="bangleColor">
+            <option value="">-- Select a Color --</option>
+            <option value="Red">Red</option>
+            <option value="Maroon">Maroon</option>
+            <option value="Multi">Multi-Color</option>
+            <option value="Pink">Pink</option>
+            <option value="Blue">Blue</option>
+            <option value="Green">Green</option>
+            <option value="Gold">Gold</option>
+            <option value="Silver">Silver</option>
+            <option value="Black">Black</option>
+            <option value="White">White</option>
+            <option value="Other">Other (Please specify in 'Your Message' below)</option>
+          </select>
+        </div>
+
+        <!-- Payment Preference Radio Buttons -->
+        <div class="form-group">
+          <label>Payment Preference</label>
+          <div class="radio-group">
+            <input type="radio" id="paymentOption1" name="paymentOption" value="50_percent_advance" required />
+            <label for="paymentOption1">50% Advance Payment, then Full Payment after Photo/Video Approval</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="paymentOption2" name="paymentOption" value="full_payment" required />
+            <label for="paymentOption2">Full Payment Upfront</label>
+          </div>
+          <small class="form-hint">Choose your preferred payment method for custom orders.</small>
+        </div>
+
+        <!-- Message/Special Requirements Textarea -->
+        <div class="form-group">
+          <label for="message">Your Message / Special Requirements</label>
+          <textarea id="message" name="message" rows="7" placeholder="Tell us about your bangle preferences, detailed design requirements, any special instructions, or if you selected 'Other' for color/size..." required></textarea>
+        </div>
+
+        <!-- Form Submission Button -->
+        <button type="submit" class="submit-btn">Send Message</button>
+      </form>
+    </section>
+    
+    <!-- Footer Section with Shop Information -->
+    <footer>
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;" />
+      <p><strong>👤 Owner:</strong> S M Fardeen Ali</p>
+      <p><strong>🏪 Shop:</strong> Famous Lahthi</p>
+      <p><strong>📞 Contact:</strong> +91 7033886044</p>
+      <p><strong>📍 Address:</strong> Marwari Tola Lane, Near Neem Gaach, Bhagalpur, Bihar – 812002</p>
+      <p><strong>🛒 Order Link:</strong> <a href="https://bit.ly/famouslahthilinkorder" target="_blank" rel="noopener noreferrer">👉 Order Here</a></p>
+      <br />
+      <p>&copy; 2025 Famous Lahthi – All Rights Reserved</p>
+    </footer>
+  </div>
+
+  <!-- Link to your JavaScript file for form handling -->
+  <script src="script.js"></script>
+</body>
+</html>
