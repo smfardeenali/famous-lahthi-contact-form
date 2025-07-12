@@ -1,43 +1,128 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+document.addEventListener('DOMContentLoaded', () => {
+  const contactForm = document.getElementById('contactForm');
+  const submitButton = contactForm.querySelector('.submit-btn');
+  const formSection = document.querySelector('.form-section'); // संदेशों को जोड़ने के लिए
 
-on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
+  // फॉर्म सबमिशन इवेंट लिसनर
+  contactForm.addEventListener('submit', async (event) => {
+    event.preventDefault(); // डिफ़ॉल्ट फॉर्म सबमिशन को रोकें
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    submitButton.disabled = true; // मल्टीपल सबमिशन रोकने के लिए बटन को अक्षम करें
+    submitButton.textContent = 'भेजा जा रहा है...'; // बटन टेक्स्ट बदलें
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+    // पिछले संदेशों को हटाएँ (यदि कोई हों)
+    const existingMessage = document.getElementById('form-message');
+    if (existingMessage) {
+      existingMessage.remove();
+    }
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    const formData = new FormData(contactForm);
+    const data = {}; // एक खाली ऑब्जेक्ट बनाएँ जहाँ हम फॉर्म की जानकारी रखेंगे
 
-jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+    // FormData से सभी टेक्स्ट फ़ील्ड को 'data' ऑब्जेक्ट में कॉपी करें
+    for (let [key, value] of formData.entries()) {
+      // सुनिश्चित करें कि हम केवल टेक्स्ट फ़ील्ड को ही कॉपी करें, फ़ाइल को नहीं
+      if (key !== 'designImage') { 
+        data[key] = value;
+      }
+    }
+
+    // फ़ाइल अपलोड को हैंडल करें: Base64 में बदलें
+    const designImageInput = document.getElementById('designImage');
+    if (designImageInput.files.length > 0) {
+      const file = designImageInput.files[0];
+
+      // क्लाइंट-साइड फ़ाइल साइज़ सत्यापन (15MB)
+      const MAX_FILE_SIZE_MB = 15;
+      const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        showMessage(`त्रुटि: इमेज फ़ाइल का साइज़ ${MAX_FILE_SIZE_MB}MB से अधिक है। कृपया एक छोटी इमेज चुनें।`, 'error');
+        submitButton.disabled = false;
+        submitButton.textContent = 'संदेश भेजें';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // फ़ाइल को Base64 URL के रूप में पढ़ें
+
+      reader.onload = async () => {
+        const base64Data = reader.result.split(',')[1]; // 'data:image/png;base64,' उपसर्ग के बिना Base64 स्ट्रिंग प्राप्त करें
+        data.designImageBase64 = base64Data; // Base64 डेटा को 'data' ऑब्जेक्ट में जोड़ें
+        data.designImageName = file.name;
+        data.designImageMimeType = file.type;
+
+        await sendFormData(data); // अब 'data' ऑब्जेक्ट को भेजें
+      };
+
+      reader.onerror = (error) => {
+        console.error('फ़ाइल पढ़ने में त्रुटि:', error);
+        showMessage('इमेज फ़ाइल पढ़ने में त्रुटि हुई। कृपया पुनः प्रयास करें।', 'error');
+        submitButton.disabled = false;
+        submitButton.textContent = 'संदेश भेजें';
+      };
+    } else {
+      // इमेज के बिना फॉर्म डेटा भेजें
+      await sendFormData(data); // सीधे 'data' ऑब्जेक्ट भेजें
+    }
+  });
+
+  /**
+   * फॉर्म डेटा को Google Apps Script वेब ऐप URL पर भेजता है।
+   * @param {Object} data - भेजने के लिए फॉर्म डेटा ऑब्जेक्ट।
+   */
+  async function sendFormData(data) {
+    // यहाँ अपने डिप्लॉय किए गए Google Apps Script वेब ऐप URL को अपडेट करें
+    const APPS_SCRIPT_WEB_APP_URL = 'YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE'; // <--- महत्वपूर्ण: इस URL को अपडेट करें!
+
+    try {
+      const response = await fetch(APPS_SCRIPT_WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors', // क्रॉस-ओरिजिन रिक्वेस्ट के लिए आवश्यक है
+        headers: {
+          'Content-Type': 'application/json', // हम बता रहे हैं कि हम JSON डेटा भेज रहे हैं
+        },
+        body: JSON.stringify(data), // JavaScript ऑब्जेक्ट को JSON स्ट्रिंग में बदलें
+      });
+
+      // 'no-cors' मोड के कारण, हम सीधे response.status या response.ok नहीं पढ़ सकते।
+      // यदि कोई नेटवर्क त्रुटि नहीं हुई तो हम सफलता मान लेते हैं।
+      showMessage('धन्यवाद! आपका संदेश सफलतापूर्वक भेजा गया है। हम जल्द ही आपसे संपर्क करेंगे।', 'success');
+      contactForm.reset(); // फॉर्म को साफ़ करें
+    } catch (error) {
+      console.error('फॉर्म सबमिट करने में त्रुटि:', error);
+      showMessage('आपका संदेश भेजने में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।', 'error');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = 'संदेश भेजें';
+    }
+  }
+
+  /**
+   * उपयोगकर्ता को सफलता या त्रुटि संदेश प्रदर्शित करता है।
+   * @param {string} message - प्रदर्शित किया जाने वाला संदेश।
+   * @param {string} type - संदेश का प्रकार ('success' या 'error')।
+   */
+  function showMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.id = 'form-message';
+    messageDiv.textContent = message;
+    messageDiv.style.padding = '15px';
+    messageDiv.style.borderRadius = '8px';
+    messageDiv.style.marginTop = '20px';
+    messageDiv.style.marginBottom = '20px'; // संदेश के बाद कुछ जगह
+    messageDiv.style.textAlign = 'center';
+    messageDiv.style.fontWeight = 'bold';
+
+    if (type === 'success') {
+      messageDiv.style.backgroundColor = '#d4edda';
+      messageDiv.style.color = '#155724';
+      messageDiv.style.border = '1px solid #c3e6cb';
+    } else if (type === 'error') {
+      messageDiv.style.backgroundColor = '#f8d7da';
+      messageDiv.style.color = '#721c24';
+      messageDiv.style.border = '1px solid #f5c6cb';
+    }
+    // फॉर्म के बाद संदेश डालें
+    formSection.insertBefore(messageDiv, contactForm.nextElementSibling); 
+  }
+});
