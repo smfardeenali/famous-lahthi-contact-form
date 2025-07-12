@@ -1,0 +1,125 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const contactForm = document.getElementById('contactForm');
+  const submitButton = contactForm.querySelector('.submit-btn');
+  const formSection = document.querySelector('.form-section'); // संदेशों को जोड़ने के लिए
+
+  // फॉर्म सबमिशन इवेंट लिसनर
+  contactForm.addEventListener('submit', async (event) => {
+    event.preventDefault(); // डिफ़ॉल्ट फॉर्म सबमिशन को रोकें
+
+    submitButton.disabled = true; // मल्टीपल सबमिशन रोकने के लिए बटन को अक्षम करें
+    submitButton.textContent = 'Sending...'; // बटन टेक्स्ट बदलें
+
+    // पिछले संदेशों को हटाएँ (यदि कोई हों)
+    const existingMessage = document.getElementById('form-message');
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+
+    const formData = new FormData(contactForm);
+    const data = {};
+
+    // FormData को एक साधारण ऑब्जेक्ट में बदलें
+    for (let [key, value] of formData.entries()) {
+      data[key] = value;
+    }
+
+    // फ़ाइल अपलोड को हैंडल करें: Base64 में बदलें
+    const designImageInput = document.getElementById('designImage');
+    if (designImageInput.files.length > 0) {
+      const file = designImageInput.files[0];
+
+      // क्लाइंट-साइड फ़ाइल साइज़ सत्यापन (15MB)
+      const MAX_FILE_SIZE_MB = 15;
+      const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        showMessage(`Error: इमेज फ़ाइल का साइज़ ${MAX_FILE_SIZE_MB}MB से अधिक है। कृपया एक छोटी इमेज चुनें।`, 'error');
+        submitButton.disabled = false;
+        submitButton.textContent = 'Send Message';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // फ़ाइल को Base64 URL के रूप में पढ़ें
+
+      reader.onload = async () => {
+        const base64Data = reader.result.split(',')[1]; // 'data:image/png;base64,' उपसर्ग के बिना Base64 स्ट्रिंग प्राप्त करें
+        data.designImageBase64 = base64Data;
+        data.designImageName = file.name;
+        data.designImageMimeType = file.type;
+
+        await sendFormData(data);
+      };
+
+      reader.onerror = (error) => {
+        console.error('फ़ाइल पढ़ने में त्रुटि:', error);
+        showMessage('इमेज फ़ाइल पढ़ने में त्रुटि हुई। कृपया पुनः प्रयास करें।', 'error');
+        submitButton.disabled = false;
+        submitButton.textContent = 'Send Message';
+      };
+    } else {
+      // इमेज के बिना फॉर्म डेटा भेजें
+      await sendFormData(data);
+    }
+  });
+
+  /**
+   * फॉर्म डेटा को Google Apps Script वेब ऐप URL पर भेजता है।
+   * @param {Object} data - भेजने के लिए फॉर्म डेटा।
+   */
+  async function sendFormData(data) {
+    // यहाँ अपने डिप्लॉय किए गए Google Apps Script वेब ऐप URL को अपडेट करें
+    const APPS_SCRIPT_WEB_APP_URL = 'YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE'; // <--- महत्वपूर्ण: इस URL को अपडेट करें!
+
+    try {
+      const response = await fetch(APPS_SCRIPT_WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors', // क्रॉस-ओरिजिन रिक्वेस्ट के लिए आवश्यक है
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded', // Apps Script e.parameters के लिए इसकी अपेक्षा करता है
+        },
+        body: new URLSearchParams(data).toString(), // ऑब्जेक्ट को URL-एन्कोडेड स्ट्रिंग में बदलें
+      });
+
+      // 'no-cors' मोड के कारण, हम सीधे response.status या response.ok नहीं पढ़ सकते।
+      // यदि कोई नेटवर्क त्रुटि नहीं हुई तो हम सफलता मान लेते हैं।
+      showMessage('धन्यवाद! आपका संदेश सफलतापूर्वक भेजा गया है। हम जल्द ही आपसे संपर्क करेंगे।', 'success');
+      contactForm.reset(); // फॉर्म को साफ़ करें
+    } catch (error) {
+      console.error('फॉर्म सबमिट करने में त्रुटि:', error);
+      showMessage('आपका संदेश भेजने में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।', 'error');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send Message';
+    }
+  }
+
+  /**
+   * उपयोगकर्ता को सफलता या त्रुटि संदेश प्रदर्शित करता है।
+   * @param {string} message - प्रदर्शित किया जाने वाला संदेश।
+   * @param {string} type - संदेश का प्रकार ('success' या 'error')।
+   */
+  function showMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.id = 'form-message';
+    messageDiv.textContent = message;
+    messageDiv.style.padding = '15px';
+    messageDiv.style.borderRadius = '8px';
+    messageDiv.style.marginTop = '20px';
+    messageDiv.style.marginBottom = '20px'; // संदेश के बाद कुछ जगह
+    messageDiv.style.textAlign = 'center';
+    messageDiv.style.fontWeight = 'bold';
+
+    if (type === 'success') {
+      messageDiv.style.backgroundColor = '#d4edda';
+      messageDiv.style.color = '#155724';
+      messageDiv.style.border = '1px solid #c3e6cb';
+    } else if (type === 'error') {
+      messageDiv.style.backgroundColor = '#f8d7da';
+      messageDiv.style.color = '#721c24';
+      messageDiv.style.border = '1px solid #f5c6cb';
+    }
+    // फॉर्म के बाद संदेश डालें
+    formSection.insertBefore(messageDiv, contactForm.nextElementSibling); 
+  }
+});
